@@ -23,10 +23,11 @@ TrajectoryOptimizer::TrajectoryOptimizer(const CartesianPlannerConfig &config, c
   vehicle_ = config_.vehicle;
 }
 
+// Alg. 1 in paper
 bool TrajectoryOptimizer::OptimizeIteratively(const DiscretizedTrajectory &coarse, const Constraints &constraints,
                                               States &result) {
   States guess;
-  for (auto &pt: coarse.data()) {
+  for (auto &pt : coarse.data()) {
     guess.x.push_back(pt.x);
     guess.y.push_back(pt.y);
     guess.theta.push_back(pt.theta);
@@ -39,6 +40,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(const DiscretizedTrajectory &coars
   Constraints iterative_constraints = constraints;
 
   while (iter < config_.opti_iter_max) {
+    // collision-avoidance constraints
     FormulateCorridorConstraints(guess, iterative_constraints);
 
     double cur_infeasibility = nlp_.SolveIteratively(w_penalty, iterative_constraints, guess, coarse, guess);
@@ -59,6 +61,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(const DiscretizedTrajectory &coars
   return false;
 }
 
+// kinematic constraints
 void TrajectoryOptimizer::CalculateInitialGuess(States &states) const {
   states.v.resize(config_.nfe, 0.0);
   states.phi.resize(config_.nfe, 0.0);
@@ -87,10 +90,11 @@ void TrajectoryOptimizer::CalculateInitialGuess(States &states) const {
   }
 }
 
+// construction of corridors
 bool TrajectoryOptimizer::FormulateCorridorConstraints(States &states, Constraints &constraints) {
   constraints.front_bound.resize(config_.nfe);
   constraints.rear_bound.resize(config_.nfe);
-  states.xf.resize(config_.nfe);
+  states.xf.resize(config_.nfe);  // x_disc, y_disc
   states.yf.resize(config_.nfe);
   states.xr.resize(config_.nfe);
   states.yr.resize(config_.nfe);

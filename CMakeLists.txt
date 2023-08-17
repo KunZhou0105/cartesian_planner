@@ -34,6 +34,7 @@ set_target_properties(casadi PROPERTIES
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   message_generation
   geometry_msgs
 )
@@ -53,7 +54,7 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES cartesian_planner
-  CATKIN_DEPENDS roscpp message_runtime
+  CATKIN_DEPENDS roscpp rospy message_runtime
 )
 
 include_directories(

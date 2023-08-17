@@ -22,7 +22,7 @@
 using namespace cartesian_planner;
 
 class CartesianPlannerNode {
-public:
+ public:
   explicit CartesianPlannerNode(const ros::NodeHandle &nh) : nh_(nh) {
     env_ = std::make_shared<Environment>(config_);
     planner_ = std::make_shared<CartesianPlanner>(config_, env_);
@@ -45,7 +45,7 @@ public:
 
   void CenterLineCallback(const CenterLineConstPtr &msg) {
     Trajectory data;
-    for (auto &pt: msg->points) {
+    for (auto & pt : msg->points) {
       TrajectoryPoint tp;
       tp.s = pt.s;
       tp.x = pt.x;
@@ -63,9 +63,9 @@ public:
 
   void ObstaclesCallback(const ObstaclesConstPtr &msg) {
     env_->obstacles().clear();
-    for (auto &obstacle: msg->obstacles) {
+    for (auto &obstacle : msg->obstacles) {
       std::vector<math::Vec2d> points;
-      for (auto &pt: obstacle.points) {
+      for (auto &pt : obstacle.points) {
         points.emplace_back(pt.x, pt.y);
       }
       env_->obstacles().emplace_back(points);
@@ -75,13 +75,13 @@ public:
 
   void DynamicObstaclesCallback(const DynamicObstaclesConstPtr &msg) {
     env_->dynamic_obstacles().clear();
-    for (auto &obstacle: msg->obstacles) {
+    for (auto &obstacle : msg->obstacles) {
       Environment::DynamicObstacle dynamic_obstacle;
 
-      for (auto &tp: obstacle.trajectory) {
+      for (auto &tp : obstacle.trajectory) {
         math::Pose coord(tp.x, tp.y, tp.theta);
         std::vector<math::Vec2d> points;
-        for (auto &pt: obstacle.polygon.points) {
+        for (auto &pt : obstacle.polygon.points) {
           points.push_back(coord.transform({pt.x, pt.y, 0.0}));
         }
         math::Polygon2d polygon(points);
@@ -102,7 +102,7 @@ public:
       for (int i = 0; i < config_.nfe; i++) {
         double time = dt * i;
         auto dynamic_obstacles = env_->QueryDynamicObstacles(time);
-        for (auto &obstacle: dynamic_obstacles) {
+        for (auto &obstacle : dynamic_obstacles) {
           int hue = int((double) obstacle.first / env_->dynamic_obstacles().size() * 320);
 
           visualization::PlotPolygon(obstacle.second, 0.2, visualization::Color::fromHSV(hue, 1.0, 1.0), obstacle.first,
@@ -118,7 +118,7 @@ public:
     }
   }
 
-private:
+ private:
   ros::NodeHandle nh_;
   cartesian_planner::CartesianPlannerConfig config_;
   Env env_;
@@ -131,7 +131,7 @@ private:
     auto tires = GenerateTireBoxes({pt.x(), pt.y(), pt.theta()}, phi);
 
     int tire_id = 1;
-    for (auto &tire: tires) {
+    for (auto &tire : tires) {
       visualization::PlotPolygon(math::Polygon2d(tire), 0.1, visualization::Color::White, id * (tire_id++),
                                  "Tires");
     }

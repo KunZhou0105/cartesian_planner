@@ -65,7 +65,7 @@ public:
    */
   double omega_max = 1.5;
 
-  double radius;
+  double radius;  // R_disc
   double f2x, r2x;
 
   VehicleParam() {
