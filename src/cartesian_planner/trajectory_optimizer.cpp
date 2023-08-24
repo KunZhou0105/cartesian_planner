@@ -40,7 +40,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(const DiscretizedTrajectory &coars
   Constraints iterative_constraints = constraints;
 
   while (iter < config_.opti_iter_max) {
-    // collision-avoidance constraints
+    // collision-avoidance constraints ==> Within-corridor constraints
     FormulateCorridorConstraints(guess, iterative_constraints);
 
     double cur_infeasibility = nlp_.SolveIteratively(w_penalty, iterative_constraints, guess, coarse, guess);
@@ -61,7 +61,7 @@ bool TrajectoryOptimizer::OptimizeIteratively(const DiscretizedTrajectory &coars
   return false;
 }
 
-// kinematic constraints
+// kinematic constraints, returns all the decision variables necessary for solving OCP
 void TrajectoryOptimizer::CalculateInitialGuess(States &states) const {
   states.v.resize(config_.nfe, 0.0);
   states.phi.resize(config_.nfe, 0.0);
